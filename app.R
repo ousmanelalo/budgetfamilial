@@ -39,7 +39,7 @@ ui <- dashboardPage(
       menuItem("Bilan mensuel", tabName = "bilan_mensuel", icon = icon("balance-scale-right"))
     ),
     hr(), # Ligne de séparation visuelle
-    h4("Options et Informations", style = "padding-left: 15px; color: #fff;"),
+    h4(""),
     # Bouton pour rafraîchir manuellement les données
     actionButton("rafraichir_donnees", "Rafraîchir les données", icon = icon("sync-alt"),
                  style = "margin-left: 15px; margin-bottom: 10px;"),
@@ -161,7 +161,7 @@ server <- function(input, output, session) {
   # Lorsque le bouton est cliqué, incrémente le déclencheur pour recharger les données.
   observeEvent(input$rafraichir_donnees, {
     refresh_trigger(refresh_trigger() + 1)
-    showNotification("Chargement des données depuis Google Sheets...", type = "message", duration = 3, session = session)
+    showNotification("Chargement des données...", type = "message", duration = 3, session = session)
   })
   
   # Afficher l'heure du dernier rafraîchissement dans la barre latérale
