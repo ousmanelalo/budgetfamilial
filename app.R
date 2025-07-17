@@ -35,7 +35,7 @@ ui <- dashboardPage(
       # Éléments de menu pour naviguer entre les différentes vues
       menuItem("Vue d'ensemble", tabName = "vue_ensemble", icon = icon("dashboard")),
       menuItem("Détail des cotisations", tabName = "detail_revenus", icon = icon("money-bill-alt")),
-      menuItem("Détail des dépenses", tabName = "detail_", icon = icon("wallet")),
+      menuItem("Détail des Depenses", tabName = "detail_depenses", icon = icon("wallet")),
       menuItem("Bilan mensuel", tabName = "bilan_mensuel", icon = icon("balance-scale-right"))
     ),
     hr(), # Ligne de séparation visuelle
@@ -78,17 +78,17 @@ ui <- dashboardPage(
              
               fluidRow(
                 valueBoxOutput("totalRevenusBox", width = 4),
-                valueBoxOutput("totalBox", width = 4),
+                valueBoxOutput("totalDepensesBox", width = 4),
                 valueBoxOutput("soldeDisponibleBox", width = 4)
               ),
-              # Ligne de graphiques pour les revenus et dépenses
+              # Ligne de graphiques pour les revenus et Depenses
               fluidRow(
                 box(
                   title = "Revenus mensuels et cumulés", status = "primary", solidHeader = TRUE, width = 6,
                   plotOutput("revenuPlot", height = "300px")
                 ),
                 box(
-                  title = "Dépenses mensuelles et cumulées", status = "danger", solidHeader = TRUE, width = 6,
+                  title = "Depenses mensuelles et cumulées", status = "danger", solidHeader = TRUE, width = 6,
                   plotOutput("depensePlot", height = "300px")
                 )
               ),
@@ -112,12 +112,12 @@ ui <- dashboardPage(
               )
       ),
       
-      # --- Tab 3: Détail des Dépenses (Tableau interactif) ---
-      tabItem(tabName = "detail_",
-              h2("Détail des dépenses par type et par mois", align = "center"),
+      # --- Tab 3: Détail des Depenses (Tableau interactif) ---
+      tabItem(tabName = "detail_depenses",
+              h2("Détail des Depenses par type et par mois", align = "center"),
               fluidRow(
                 box(
-                  title = "Tableau détaillé des dépenses", status = "danger", solidHeader = TRUE, width = 12,
+                  title = "Tableau détaillé des Depenses", status = "danger", solidHeader = TRUE, width = 12,
                   DTOutput("depenseDetailTable")
                 )
               )
@@ -191,7 +191,7 @@ server <- function(input, output, session) {
         revenu_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
         depense_detail = data.frame(Type = character(), Mois = factor(), Montant = numeric()),
         depense_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
-        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Dépenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
+        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Depenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
       ))
     }
     
@@ -213,7 +213,7 @@ server <- function(input, output, session) {
         revenu_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
         depense_detail = data.frame(Type = character(), Mois = factor(), Montant = numeric()),
         depense_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
-        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Dépenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
+        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Depenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
       ))
     }
     
@@ -255,12 +255,12 @@ server <- function(input, output, session) {
         revenu_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
         depense_detail = data.frame(Type = character(), Mois = factor(), Montant = numeric()),
         depense_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
-        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Dépenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
+        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Depenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
       ))
     }
     
     first_col_name_depense <- names(df_depense)[1]
-    total_depense_row_index <- which(df_depense[[first_col_name_depense]] == "DÉPENSES TOTALES")
+    total_depense_row_index <- which(df_depense[[first_col_name_depense]] == "Depenses TOTALES")
     df_depense_clean <- if (length(total_depense_row_index) > 0) {
       df_depense[1:(total_depense_row_index - 1), ]
     } else {
@@ -277,7 +277,7 @@ server <- function(input, output, session) {
         revenu_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
         depense_detail = data.frame(Type = character(), Mois = factor(), Montant = numeric()),
         depense_summary = data.frame(Mois = factor(), Total_Mensuel = numeric(), Total_Cumule = numeric()),
-        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Dépenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
+        bilan_summary = data.frame(Mois = factor(), Revenus = numeric(), Depenses = numeric(), Bilan = numeric(), Bilan_Cumule = numeric())
       ))
     }
     
@@ -295,24 +295,24 @@ server <- function(input, output, session) {
       filter(!is.na(Montant)) %>%
       select(Type, Mois, Montant)
     
-    # Calcul des totaux mensuels et cumulés pour les dépenses
+    # Calcul des totaux mensuels et cumulés pour les Depenses
     df_depense_summary <- df_depense_long %>%
       group_by(Mois) %>%
       summarise(Total_Mensuel = sum(Montant, na.rm = TRUE), .groups = "drop") %>%
       mutate(Total_Cumule = cumsum(Total_Mensuel))
     
     # --- Combiner les données pour le Bilan Mensuel ---
-    # Jointures des résumés de revenus et dépenses par mois
+    # Jointures des résumés de revenus et Depenses par mois
     df_bilan <- full_join(
       df_revenu_summary %>% select(Mois, Revenus = Total_Mensuel),
-      df_depense_summary %>% select(Mois, Dépenses = Total_Mensuel),
+      df_depense_summary %>% select(Mois, Depenses = Total_Mensuel),
       by = "Mois"
     ) %>%
       # Remplacement des NA par 0 pour un calcul correct du bilan
       mutate(
         Revenus = replace_na(Revenus, 0),
-        Dépenses = replace_na(Dépenses, 0),
-        Bilan = Revenus - Dépenses, # Calcul du bilan mensuel
+        Depenses = replace_na(Depenses, 0),
+        Bilan = Revenus - Depenses, # Calcul du bilan mensuel
         Bilan_Cumule = cumsum(Bilan) # Calcul du bilan cumulé
       ) %>%
       # S'assure que l'ordre des mois est correct après la jointure
@@ -351,16 +351,16 @@ server <- function(input, output, session) {
     )
   })
   
-  # Box pour les dépenses totales
-  output$totalBox <- renderValueBox({
+  # Box pour les Depenses totales
+  output$totalDepensesBox <- renderValueBox({
     data <- budget_data()
-    total__global <- tryCatch({
+    total_depenses_global <- tryCatch({
       sum(data$depense_detail$Montant, na.rm = TRUE)
     }, error = function(e) 0)
     
     valueBox(
-      paste(format(total__global, big.mark = " ", nsmall = 0), " FCFA"),
-      "Dépenses Totales",
+      paste(format(total_depenses_global, big.mark = " ", nsmall = 0), " FCFA"),
+      "Depenses Totales",
       icon = icon("shopping-cart"),
       color = "red"
     )
@@ -372,10 +372,10 @@ server <- function(input, output, session) {
     total_revenus_global <- tryCatch({
       sum(data$revenu_detail$Montant, na.rm = TRUE)
     }, error = function(e) 0)
-    total__global <- tryCatch({
+    total_depenses_global <- tryCatch({
       sum(data$depense_detail$Montant, na.rm = TRUE)
     }, error = function(e) 0)
-    solde_disponible <- total_revenus_global - total__global
+    solde_disponible <- total_revenus_global - total_depenses_global
     
     # Détermine la couleur et l'icône en fonction du solde (positif/négatif)
     solde_color <- if (solde_disponible >= 0) "aqua" else "orange"
@@ -414,7 +414,7 @@ server <- function(input, output, session) {
       scale_y_continuous(labels = scales::label_number(big.mark = " ", decimal.mark = ","))
   })
   
-  # Graphique des dépenses mensuelles et cumulées
+  # Graphique des Depenses mensuelles et cumulées
   output$depensePlot <- renderPlot({
     data <- budget_data()
     req(data$depense_summary)
@@ -496,7 +496,7 @@ server <- function(input, output, session) {
       )
   })
   
-  # Tableau détaillé des dépenses (dans l'onglet "Détail des Dépenses")
+  # Tableau détaillé des Depenses (dans l'onglet "Détail des Depenses")
   output$depenseDetailTable <- renderDT({
     data <- budget_data()
     req(data$depense_detail)
@@ -517,7 +517,7 @@ server <- function(input, output, session) {
                              buttons = c('copy', 'csv', 'excel', 'pdf', 'print')),
               extensions = 'Buttons',
               rownames = FALSE,
-              caption = "Détail des Dépenses par Type et par Mois (FCFA)") %>%
+              caption = "Détail des Depenses par Type et par Mois (FCFA)") %>%
       # *** NOUVEAUTÉ : Coloration des cellules vides en rouge ***
       formatStyle(
         columns = names(df_display)[-1], # Applique le style à toutes les colonnes sauf la première ('Type')
@@ -543,14 +543,14 @@ server <- function(input, output, session) {
       mutate(
         # Formatage des colonnes numériques pour l'affichage
         Revenus = format(Revenus, big.mark = " ", nsmall = 0),
-        Dépenses = format(Dépenses, big.mark = " ", nsmall = 0),
+        Depenses = format(Depenses, big.mark = " ", nsmall = 0),
         Bilan = format(Bilan, big.mark = " ", nsmall = 0),
         Bilan_Cumule = format(Bilan_Cumule, big.mark = " ", nsmall = 0)
       ) %>%
       rename(
         Mois = Mois,
         `Revenus (FCFA)` = Revenus,
-        `Dépenses (FCFA)` = Dépenses,
+        `Depenses (FCFA)` = Depenses,
         `Bilan Mensuel (FCFA)` = Bilan,
         `Bilan Cumulé (FCFA)` = Bilan_Cumule
       )
