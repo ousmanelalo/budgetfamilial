@@ -68,6 +68,12 @@ ui <- dashboardPage(
 
         /* Marge pour les boutons des tableaux DT */
         .dataTables_wrapper .dt-buttons { margin-bottom: 10px; }
+        /* Nouveau style pour permettre le défilement horizontal sur les petits écrans */
+        .table-responsive-dt {
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch; /* Pour un défilement plus fluide sur iOS */
+        }
       "))
     ),
     
@@ -103,22 +109,22 @@ ui <- dashboardPage(
       
       # --- Tab 2: Détail des Revenus (Tableau interactif) ---
       tabItem(tabName = "detail_revenus",
-              h2("Détail des revenus par personne et par Mois", align = "center"),
+            
               fluidRow(
                 box(
-                  title = "Tableau détaillé des cotisations", status = "primary", solidHeader = TRUE, width = 12,
-                  DTOutput("revenuDetailTable")
+                  title = "Tableau détaillé des cotisations par personne et par mois", status = "primary", solidHeader = TRUE, width = 12,
+                  div(class = "table-responsive-dt", DTOutput("revenuDetailTable"))
                 )
               )
       ),
       
       # --- Tab 3: Détail des Depenses (Tableau interactif) ---
       tabItem(tabName = "detail_depenses",
-              h2("Détail des Depenses par type et par mois", align = "center"),
+             
               fluidRow(
                 box(
-                  title = "Tableau détaillé des Depenses", status = "danger", solidHeader = TRUE, width = 12,
-                  DTOutput("depenseDetailTable")
+                  title = "Tableau détaillé des dépenses", status = "danger", solidHeader = TRUE, width = 12,
+                  div(class = "table-responsive-dt", DTOutput("depenseDetailTable"))
                 )
               )
       ),
@@ -129,7 +135,7 @@ ui <- dashboardPage(
               fluidRow(
                 box(
                   title = "Synthèse du bilan par mois", status = "success", solidHeader = TRUE, width = 12,
-                  DTOutput("bilanSummaryTable")
+                  div(class = "table-responsive-dt", DTOutput("bilanSummaryTable"))
                 )
               )
       )
