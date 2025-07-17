@@ -319,7 +319,7 @@ server <- function(input, output, session) {
         Revenus = replace_na(Revenus, 0),
         Depenses = replace_na(Depenses, 0),
         Bilan = Revenus - Depenses, # Calcul du bilan mensuel
-        Bilan_Cumule = cumsum(Bilan) # Calcul du bilan cumulé
+        Bilan_Cumule = cumsum(Bilan) # Calcul du Bilan Cumule
       ) %>%
       # S'assure que l'ordre des mois est correct après la jointure
       mutate(Mois = factor(Mois, levels = mois_cols)) %>%
@@ -450,11 +450,11 @@ server <- function(input, output, session) {
     }
     ggplot(data$bilan_summary, aes(x = Mois)) +
       geom_col(aes(y = Bilan, fill = Bilan > 0)) + # Barres vertes pour bénéfice, rouges pour déficit
-      geom_line(aes(y = Bilan_Cumule, group = 1, color = "Bilan Cumulé"), linewidth = 1) +
-      geom_point(aes(y = Bilan_Cumule, color = "Bilan Cumulé"), size = 2) +
+      geom_line(aes(y = Bilan_Cumule, group = 1, color = "Bilan Cumule"), linewidth = 1) +
+      geom_point(aes(y = Bilan_Cumule, color = "Bilan Cumule"), size = 2) +
       scale_fill_manual(values = c("TRUE" = "#28a745", "FALSE" = "#dc3545"), name = "Statut",
                         labels = c("TRUE" = "Bénéfice", "FALSE" = "Déficit")) +
-      scale_color_manual(name = "Type", values = c("Bilan Cumulé" = "purple")) +
+      scale_color_manual(name = "Type", values = c("Bilan Cumule" = "purple")) +
       labs(title = "", x = "Mois", y = "Montant (FCFA)") +
       theme_minimal() +
       theme(legend.position = "bottom", plot.title = element_text(hjust = 0.5, face = "bold"),
@@ -558,7 +558,7 @@ server <- function(input, output, session) {
         `Revenus (FCFA)` = Revenus,
         `Depenses (FCFA)` = Depenses,
         `Bilan Mensuel (FCFA)` = Bilan,
-        `Bilan Cumulé (FCFA)` = Bilan_Cumule
+        `Bilan Cumule (FCFA)` = Bilan_Cumule
       )
     
     datatable(df_formatted,
