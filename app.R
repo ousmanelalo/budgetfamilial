@@ -35,7 +35,7 @@ ui <- dashboardPage(
       # Éléments de menu pour naviguer entre les différentes vues
       menuItem("Vue d'ensemble", tabName = "vue_ensemble", icon = icon("dashboard")),
       menuItem("Détail des cotisations", tabName = "detail_revenus", icon = icon("money-bill-alt")),
-      menuItem("Détail des dépenses", tabName = "detail_depenses", icon = icon("wallet")),
+      menuItem("Détail des dépenses", tabName = "detail_", icon = icon("wallet")),
       menuItem("Bilan mensuel", tabName = "bilan_mensuel", icon = icon("balance-scale-right"))
     ),
     hr(), # Ligne de séparation visuelle
@@ -78,7 +78,7 @@ ui <- dashboardPage(
              
               fluidRow(
                 valueBoxOutput("totalRevenusBox", width = 4),
-                valueBoxOutput("totalDepensesBox", width = 4),
+                valueBoxOutput("totalBox", width = 4),
                 valueBoxOutput("soldeDisponibleBox", width = 4)
               ),
               # Ligne de graphiques pour les revenus et dépenses
@@ -113,7 +113,7 @@ ui <- dashboardPage(
       ),
       
       # --- Tab 3: Détail des Dépenses (Tableau interactif) ---
-      tabItem(tabName = "detail_depenses",
+      tabItem(tabName = "detail_",
               h2("Détail des dépenses par type et par mois", align = "center"),
               fluidRow(
                 box(
@@ -352,14 +352,14 @@ server <- function(input, output, session) {
   })
   
   # Box pour les dépenses totales
-  output$totalDepensesBox <- renderValueBox({
+  output$totalBox <- renderValueBox({
     data <- budget_data()
-    total_depenses_global <- tryCatch({
+    total__global <- tryCatch({
       sum(data$depense_detail$Montant, na.rm = TRUE)
     }, error = function(e) 0)
     
     valueBox(
-      paste(format(total_depenses_global, big.mark = " ", nsmall = 0), " FCFA"),
+      paste(format(total__global, big.mark = " ", nsmall = 0), " FCFA"),
       "Dépenses Totales",
       icon = icon("shopping-cart"),
       color = "red"
@@ -372,10 +372,10 @@ server <- function(input, output, session) {
     total_revenus_global <- tryCatch({
       sum(data$revenu_detail$Montant, na.rm = TRUE)
     }, error = function(e) 0)
-    total_depenses_global <- tryCatch({
+    total__global <- tryCatch({
       sum(data$depense_detail$Montant, na.rm = TRUE)
     }, error = function(e) 0)
-    solde_disponible <- total_revenus_global - total_depenses_global
+    solde_disponible <- total_revenus_global - total__global
     
     # Détermine la couleur et l'icône en fonction du solde (positif/négatif)
     solde_color <- if (solde_disponible >= 0) "aqua" else "orange"
